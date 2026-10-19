@@ -1,0 +1,100 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Analyze suspicious SMS messages and learn about possible scam warning signs.">
+    <title>ScamShield India | Digital Safety</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <div class="brand">ScamShield <span>India.</span></div>
+    </header>
+
+    <section class="hero">
+        <span class="tag">YOUR DIGITAL SAFETY COMPANION</span>
+        <h1>Think before you<br>click.</h1>
+        <p>
+            Spot suspicious messages before they become a problem.
+            Check SMS, emails, and potential scams in one place.
+        </p>
+    </section>
+
+    <main class="panel">
+        <h2>Analyze a message</h2>
+        <p class="description">
+            Paste a suspicious message below to check for spam patterns
+            and potential warning signs.
+        </p>
+
+        <form method="POST" action="/">
+            <label for="message">Your message</label>
+            <textarea
+                id="message"
+                name="message"
+                rows="6"
+                maxlength="10000"
+                required
+                placeholder="Example: Your bank account will be blocked today. Click this link immediately to complete your KYC..."
+            >{{ message }}</textarea>
+
+            <p id="char-count" class="small-note">0 / 10000 characters</p>
+
+            <div class="form-actions">
+                <button type="submit">Analyze Message →</button>
+                <button type="button" id="clear-message" class="clear-button">
+                    Clear Message
+                </button>
+            </div>
+        </form>
+
+        {% if result %}
+        <section class="result" aria-live="polite">
+            <h2>Analysis Results</h2>
+
+            <p class="result-status">{{ result.status }}</p>
+            <p>{{ result.explanation }}</p>
+
+            <div class="score">
+                <span>Model spam score</span>
+                <strong>{{ result.score }}%</strong>
+            </div>
+
+            <p class="small-note">
+                This score comes from the model's output. It is not a
+                calibrated probability that the message is fraudulent.
+            </p>
+
+            <h3>Warning signs</h3>
+
+            {% if result.warnings %}
+                <ul>
+                    {% for warning in result.warnings %}
+                        <li>{{ warning }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>
+                    No listed warning patterns were detected. That does not
+                    guarantee the message is safe.
+                </p>
+            {% endif %}
+
+            <p class="safety-tip">
+                <strong>Stay safe:</strong> Never share OTPs, UPI PINs,
+                passwords, or CVV details. Verify requests through the
+                organisation's official app or website.
+            </p>
+        </section>
+        {% endif %}
+    </main>
+
+    <footer>
+        ScamShield India · Helping you stay alert online
+    </footer>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
