@@ -81,11 +81,9 @@ The project may also contain local files and folders that are intentionally excl
 ### 1. Clone the Repository
 
 ```bash
-git clone <YOUR_GITHUB_REPOSITORY_URL>
+git clone https://github.com/surmilaBM/ScamShield.git
 cd ScamShield
 ```
-
-Replace `<YOUR_GITHUB_REPOSITORY_URL>` with your actual repository URL after creating the GitHub repository.
 
 ### 2. Create a Virtual Environment
 
