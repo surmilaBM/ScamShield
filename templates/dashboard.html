@@ -1,0 +1,252 @@
+{% extends "base.html" %}
+
+{% block title %}Overview | ScamShield {% endblock %}
+{% block page_heading %}Overview{% endblock %}
+
+{% block content %}
+
+<!-- Welcome -->
+<section class="page-intro" style="margin-bottom: 22px;">
+    <p class="page-description" style="margin-top: 0;">
+        Your message and URL screening activity at a glance.
+    </p>
+</section>
+
+<!-- Main action -->
+<section style="
+    background: #174d38;
+    color: #ffffff;
+    border-radius: 14px;
+    padding: 22px 24px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    flex-wrap: wrap;
+">
+    <div style="flex: 1; min-width: 200px;">
+        <h2 style="
+            margin: 0 0 6px;
+            font-size: 20px;
+            font-weight: 650;
+            color: #ffffff;
+        ">
+            Check a message
+        </h2>
+
+        <p style="
+            margin: 0;
+            max-width: 460px;
+            color: #e0ebe4;
+            line-height: 1.5;
+            font-size: 14px;
+        ">
+            Screen a suspicious SMS or text for potential scam signals.
+        </p>
+    </div>
+
+    <a href="{{ url_for('analyzer') }}" style="
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 12px 17px;
+        background: #ffffff;
+        color: #174d38;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 650;
+        white-space: nowrap;
+    ">
+        Analyze message
+        <svg width="16" height="16" viewBox="0 0 24 24"
+             fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round"
+             aria-hidden="true">
+            <path d="M5 12h14"/>
+            <path d="m12 5 7 7-7 7"/>
+        </svg>
+    </a>
+</section>
+
+<!-- Statistics -->
+<section class="dashboard-grid">
+
+    <article class="metric-card">
+        <span class="metric-label">Total scans</span>
+        <div class="metric-value">{{ total_scans }}</div>
+        <p class="metric-note">Total scans saved on this device</p>
+    </article>
+
+    <article class="metric-card">
+        <span class="metric-label">Suspicious scans</span>
+        <div class="metric-value">{{ flagged_scans }}</div>
+        <p class="metric-note">Classified as suspicious</p>
+    </article>
+
+    <article class="metric-card">
+        <span class="metric-label">Common warning pattern</span>
+        <div class="metric-value" style="
+            font-size: clamp(17px, 1.6vw, 22px);
+            line-height: 1.4;
+            overflow-wrap: anywhere;
+        ">
+            {{ most_common_warning }}
+        </div>
+        <p class="metric-note">Most frequent recorded warning</p>
+    </article>
+
+</section>
+
+<!-- Quick links -->
+<section style="margin-top: 28px; margin-bottom: 26px;">
+    <h2 style="
+        margin: 0 0 14px;
+        font-size: 19px;
+        font-weight: 650;
+        color: #244333;
+    ">
+        Quick access
+    </h2>
+
+    <div class="action-grid">
+
+        <a class="action-card" href="{{ url_for('analyzer') }}">
+            <span class="action-icon" aria-hidden="true">
+                <svg width="25" height="25" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="1.8"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="7"/>
+                    <path d="m16 16 4 4"/>
+                    <path d="M8.5 11h5"/>
+                    <path d="M11 8.5v5"/>
+                </svg>
+            </span>
+            <h3>Message Analyzer</h3>
+            <p>Screen a suspicious message.</p>
+        </a>
+
+        {% if SHOW_URL_SCANNER %}
+        <a class="action-card" href="{{ url_for('url_scanner') }}">
+            <span class="action-icon" aria-hidden="true">
+                <svg width="25" height="25" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="1.8"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10 13a5 5 0 0 0 7.1 0l3-3a5 5 0 0 0-7.1-7.1l-1.7 1.7"/>
+                    <path d="M14 11a5 5 0 0 0-7.1 0l-3 3a5 5 0 0 0 7.1 7.1l1.7-1.7"/>
+                </svg>
+            </span>
+            <h3>URL Scanner</h3>
+            <p>Check a suspicious link.</p>
+        </a>
+        {% endif %}
+
+        <a class="action-card" href="{{ url_for('history') }}">
+            <span class="action-icon" aria-hidden="true">
+                <svg width="25" height="25" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="1.8"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="9"/>
+                    <path d="M12 7v5l3 2"/>
+                    <path d="M3 4v4h4"/>
+                </svg>
+            </span>
+            <h3>Scan History</h3>
+            <p>Review previous scans.</p>
+        </a>
+
+        <a class="action-card" href="{{ url_for('insights') }}">
+            <span class="action-icon" aria-hidden="true">
+                <svg width="25" height="25" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="1.8"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 19V5"/>
+                    <path d="M4 19h17"/>
+                    <rect x="7" y="11" width="3" height="5" rx="1"/>
+                    <rect x="12" y="7" width="3" height="9" rx="1"/>
+                    <rect x="17" y="9" width="3" height="7" rx="1"/>
+                </svg>
+            </span>
+            <h3>Threat Insights</h3>
+            <p>Explore recorded warning patterns.</p>
+        </a>
+
+    </div>
+</section>
+
+<!-- Recent scans -->
+<section class="content-card">
+    <div class="section-heading">
+        <h2>Recent scans</h2>
+        <a href="{{ url_for('history') }}">View all →</a>
+    </div>
+
+    {% if recent_scans %}
+    <div class="data-table-wrap">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Scan</th>
+                    <th>Message / URL preview</th>
+                    <th>Result</th>
+                    <th>Risk score</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for scan in recent_scans %}
+                <tr>
+                    <td>
+                        {% if scan.scan_type == 'url' %}
+                            <strong style="color: #176b45;">
+                                #{{ scan.id }}
+                            </strong>
+                        {% else %}
+                            <a href="{{ url_for('scan_detail', scan_id=scan.id) }}">
+                                #{{ scan.id }}
+                            </a>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% set preview = scan.content if scan.scan_type else scan.message %}
+                        {{ preview[:65] }}{% if preview|length > 65 %}…{% endif %}
+                    </td>
+
+                    <td>
+                        {% if scan.status in ["Suspicious", "High structural risk"] %}
+                            <span class="status-pill status-suspicious">
+                                {{ scan.status }}
+                            </span>
+                        {% elif scan.status in ["Needs caution", "Some suspicious signals"] %}
+                            <span class="status-pill status-caution">
+                                {{ scan.status }}
+                            </span>
+                        {% else %}
+                            <span class="status-pill status-legitimate">
+                                {{ scan.status }}
+                            </span>
+                        {% endif %}
+                    </td>
+
+                    <td>{{ scan.score }}%</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% else %}
+    <div class="empty-state">
+        <p><strong>No scans yet</strong></p>
+        <p>Your analyzed messages and URLs will appear here.</p>
+        <a class="primary-link" href="{{ url_for('analyzer') }}">
+            Analyze your first message →
+        </a>
+    </div>
+    {% endif %}
+</section>
+
+{% endblock %}

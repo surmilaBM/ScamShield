@@ -1,47 +1,59 @@
 {
-    "dataset_size": 5158,
-    "training_size": 4126,
+    "model": "Calibrated Linear SVM",
+    "dataset_size": 5198,
+    "original_dataset_size": 5158,
+    "original_training_size": 4126,
+    "supplemental_training_size": 40,
+    "training_size": 4166,
     "testing_size": 1032,
-    "accuracy": 0.9855,
+    "test_set_source": "Original SMS dataset only",
+    "supplemental_data_type": "Synthetic examples; training only",
+    "training_seconds": 0.657,
+    "accuracy": 0.9864,
+    "spam_precision": 0.9385,
+    "spam_recall": 0.9531,
+    "spam_f1": 0.9457,
     "classification_report": {
         "ham": {
-            "precision": 0.9911602209944751,
-            "recall": 0.9922566371681416,
-            "f1-score": 0.9917081260364843,
+            "precision": 0.9933481152993349,
+            "recall": 0.9911504424778761,
+            "f1-score": 0.9922480620155039,
             "support": 904.0
         },
         "spam": {
-            "precision": 0.9448818897637795,
-            "recall": 0.9375,
-            "f1-score": 0.9411764705882353,
+            "precision": 0.9384615384615385,
+            "recall": 0.953125,
+            "f1-score": 0.9457364341085271,
             "support": 128.0
         },
-        "accuracy": 0.9854651162790697,
+        "accuracy": 0.9864341085271318,
         "macro avg": {
-            "precision": 0.9680210553791273,
-            "recall": 0.9648783185840708,
-            "f1-score": 0.9664422983123597,
+            "precision": 0.9659048268804367,
+            "recall": 0.972137721238938,
+            "f1-score": 0.9689922480620154,
             "support": 1032.0
         },
         "weighted avg": {
-            "precision": 0.9854202729348539,
-            "recall": 0.9854651162790697,
-            "f1-score": 0.9854406338878643,
+            "precision": 0.9865404778620888,
+            "recall": 0.9864341085271318,
+            "f1-score": 0.9864791779340184,
             "support": 1032.0
         }
     },
     "confusion_matrix": [
         [
-            897,
-            7
+            896,
+            8
         ],
         [
-            8,
-            120
+            6,
+            122
         ]
     ],
     "confusion_matrix_labels": [
         "ham",
         "spam"
-    ]
+    ],
+    "probability_note": "Scores are model-estimated probabilities, not guaranteed real-world scam probabilities.",
+    "dataset_limitation": "The holdout evaluation uses the original SMS dataset. Supplementary examples are synthetic and used for training only. Performance on real-world Indian scams has not been established."
 }

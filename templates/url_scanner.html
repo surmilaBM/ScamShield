@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+
+{% block title %}URL Scanner | ScamShield India{% endblock %}
+{% block page_heading %}URL Scanner{% endblock %}
+
+{% block content %}
+
+<section class="page-intro">
+    <p class="page-description">
+        Check a website address for suspicious structural indicators before opening it.
+    </p>
+</section>
+
+<section class="content-card">
+    <div class="section-heading">
+        <h2>Analyze a URL</h2>
+        <span class="metric-label">HTTP / HTTPS</span>
+    </div>
+
+    <form method="POST" action="{{ url_for('url_scanner') }}" id="url-scan-form">
+        <div class="form-field">
+            <label for="url">Website URL</label>
+
+            <input
+                id="url"
+                name="url"
+                type="text"
+                maxlength="2048"
+                value="{{ submitted_url }}"
+                placeholder="https://example.com/path"
+                autocomplete="off"
+                spellcheck="false"
+                required
+            >
+
+            <p class="metric-note" style="margin-top: 8px;">
+                Do not open a suspicious link to test it. Analysis uses configured
+                structural rules and does not confirm whether a site is malicious.
+            </p>
+        </div>
+
+        <button class="primary-button" type="submit" id="url-scan-button">
+            Analyze URL →
+        </button>
+    </form>
+</section>
+
+{% if result %}
+<section class="result-panel" id="url-analysis-result" tabindex="-1">
+    <div class="section-heading">
+        <h2>Scan result</h2>
+
+        {% if result.status == "High structural risk" %}
+            <span class="status-pill status-suspicious">
+                High structural risk
+            </span>
+        {% elif result.status == "Some suspicious signals" %}
+            <span class="status-pill status-suspicious">
+                Suspicious signals
+            </span>
+        {% elif result.status == "Low structural risk" %}
+            <span class="status-pill status-legitimate">
+                Low structural risk
+            </span>
+        {% else %}
+            <span class="status-pill">{{ result.status }}</span>
+        {% endif %}
+    </div>
+
+    <div style="margin-top: 22px;">
+        <p class="metric-label">Heuristic risk score</p>
+        <div class="result-score">
+            {{ result.score }}<span style="font-size: 17px;">/100</span>
+        </div>
+
+        <p class="page-description">{{ result.explanation }}</p>
+    </div>
+
+    <div class="section-heading" style="margin-top: 24px;">
+        <h2>Detected indicators</h2>
+        <span class="metric-label">{{ result.warnings|length }} detected</span>
+    </div>
+
+    {% if result.warnings %}
+        <ul class="warning-list">
+            {% for warning in result.warnings %}
+                <li>{{ warning }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="page-description">
+            No configured structural warning rules were triggered.
+            This does not guarantee that the URL is safe.
+        </p>
+    {% endif %}
+
+    {% if result.scan_id %}
+        <p class="metric-note" style="margin-top: 20px;">
+            Saved to local history as URL scan #{{ result.scan_id }}.
+        </p>
+    {% endif %}
+
+    <p class="metric-note" style="margin-top: 16px;">
+        This is a rule-based assessment, not a confirmed malware verdict.
+        No live threat-intelligence lookup is performed.
+    </p>
+</section>
+
+<script>
+    window.addEventListener("load", function () {
+        const result = document.getElementById("url-analysis-result");
+
+        if (result) {
+            result.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+        }
+    });
+</script>
+{% endif %}
+
+<section class="content-card" style="margin-top: 22px;">
+    <div class="section-heading">
+        <h2>Recent URL scans</h2>
+        <span class="metric-label">
+            {{ recent_url_scans|length }} records
+        </span>
+    </div>
+
+    {% if recent_url_scans %}
+        <div class="data-table-wrap">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Scan</th>
+                        <th>URL</th>
+                        <th>Result</th>
+                        <th>Score</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for scan in recent_url_scans %}
+                        <tr>
+                            <td>#{{ scan.id }}</td>
+                            <td>
+                                {{ scan.url[:55] }}{% if scan.url|length > 55 %}…{% endif %}
+                            </td>
+                            <td>{{ scan.status }}</td>
+                            <td>{{ scan.score }}/100</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <p><strong>No URL scans yet</strong></p>
+            <p>Your recorded URL scans will appear here after your first scan.</p>
+        </div>
+    {% endif %}
+</section>
+
+<section class="content-card" style="margin-top: 22px;">
+    <div class="section-heading">
+        <h2>Checks performed</h2>
+    </div>
+
+    <ul class="warning-list">
+        <li>IP-address hostnames</li>
+        <li>Punycode domains</li>
+        <li>Unusually long hostnames</li>
+        <li>Deep subdomains</li>
+        <li>HTTP instead of HTTPS</li>
+        <li>Account-related URL terms</li>
+    </ul>
+
+    <p class="metric-note" style="margin-top: 16px;">
+        Legitimate websites can trigger these indicators too. A low score
+        is not proof that a website is safe.
+    </p>
+</section>
+
+{% endblock %}

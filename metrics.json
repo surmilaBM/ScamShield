@@ -1,0 +1,55 @@
+{
+    "model": "Calibrated Linear SVM",
+    "random_state": 42,
+    "dataset_size": 5158,
+    "training_size": 4126,
+    "testing_size": 1032,
+    "training_seconds": 0.484,
+    "accuracy": 0.9874,
+    "spam_precision": 0.9457,
+    "spam_recall": 0.9531,
+    "spam_f1": 0.9494,
+    "classification_report": {
+        "ham": {
+            "precision": 0.9933554817275747,
+            "recall": 0.9922566371681416,
+            "f1-score": 0.9928057553956835,
+            "support": 904.0
+        },
+        "spam": {
+            "precision": 0.9457364341085271,
+            "recall": 0.953125,
+            "f1-score": 0.9494163424124513,
+            "support": 128.0
+        },
+        "accuracy": 0.9874031007751938,
+        "macro avg": {
+            "precision": 0.969545957918051,
+            "recall": 0.9726908185840708,
+            "f1-score": 0.9711110489040674,
+            "support": 1032.0
+        },
+        "weighted avg": {
+            "precision": 0.9874492432631967,
+            "recall": 0.9874031007751938,
+            "f1-score": 0.9874241227776082,
+            "support": 1032.0
+        }
+    },
+    "confusion_matrix": [
+        [
+            897,
+            7
+        ],
+        [
+            6,
+            122
+        ]
+    ],
+    "confusion_matrix_labels": [
+        "ham",
+        "spam"
+    ],
+    "probability_note": "Model-estimated spam score; not a verified probability of fraud.",
+    "dataset_limitation": "Evaluation uses the original SMS dataset and does not establish performance on all real-world Indian scams."
+}

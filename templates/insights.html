@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Threat Insights | ScamShield India{% endblock %}
+{% block page_heading %}Threat Insights{% endblock %}
+
+{% block content %}
+
+<section class="page-intro" style="margin-bottom: 24px;">
+    <p class="page-description" style="margin-top: 0;">
+        A summary of warning patterns found in your recorded scans.
+    </p>
+</section>
+
+<!-- Overview statistics -->
+<section class="dashboard-grid">
+
+    <article class="metric-card">
+        <span class="metric-label">Total scans</span>
+        <div class="metric-value">{{ total_scans }}</div>
+        <p class="metric-note">Messages and URLs</p>
+    </article>
+
+    <article class="metric-card">
+        <span class="metric-label">Flagged messages</span>
+        <div class="metric-value">{{ suspicious_count }}</div>
+        <p class="metric-note">Classified as suspicious</p>
+    </article>
+
+    <article class="metric-card">
+        <span class="metric-label">High-risk URLs</span>
+        <div class="metric-value">{{ high_url_risk_count }}</div>
+        <p class="metric-note">High structural risk score</p>
+    </article>
+
+    <article class="metric-card">
+        <span class="metric-label">Likely legitimate</span>
+        <div class="metric-value">{{ legitimate_count }}</div>
+        <p class="metric-note">Messages classified as ham</p>
+    </article>
+
+    <article class="metric-card">
+        <span class="metric-label">URLs with warnings</span>
+        <div class="metric-value">{{ suspicious_url_count }}</div>
+        <p class="metric-note">At least one risk indicator</p>
+    </article>
+
+</section>
+
+<!-- Warning patterns -->
+<section class="content-card" style="margin-top: 24px;">
+    <div class="section-heading">
+        <h2>Common warning signals</h2>
+        <span class="metric-label">Based on your scans</span>
+    </div>
+
+    {% if top_warnings %}
+
+        {% for warning, count in top_warnings %}
+        <div class="chart-bar-row">
+            <span>{{ warning }}</span>
+
+            <div class="chart-track">
+                <div
+                    class="chart-fill"
+                    style="width: {{ (count / top_warnings[0][1] * 100)|round|int }}%;"
+                ></div>
+            </div>
+
+            <strong>{{ count }}</strong>
+        </div>
+        {% endfor %}
+
+        <p class="metric-note" style="margin-top: 18px;">
+            A scan may contain multiple warning signals. These indicators
+            do not independently prove fraud.
+        </p>
+
+    {% else %}
+
+        <div class="empty-state">
+            <p><strong>No warning data yet</strong></p>
+            <p>Scan a message to start building your insights.</p>
+            <a class="primary-link" href="{{ url_for('analyzer') }}">
+                Analyze a message →
+            </a>
+        </div>
+
+    {% endif %}
+</section>
+
+<!-- Interpretation -->
+<section class="content-card" style="margin-top: 20px;">
+    <div class="section-heading">
+        <h2>Understanding the results</h2>
+    </div>
+
+    <ul class="warning-list">
+        <li>Message scores come from your trained spam detection model.</li>
+        <li>URL scores come from structural warning rules, not a trained URL classifier.</li>
+        <li>Warning signals indicate possible risk, not confirmed fraud.</li>
+        <li>A low score does not guarantee that a message or website is safe.</li>
+    </ul>
+
+    <p class="metric-note" style="margin-top: 16px;">
+        These statistics describe your saved scans, not scam activity across India.
+    </p>
+</section>
+
+{% endblock %}

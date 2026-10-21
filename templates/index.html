@@ -1,100 +1,132 @@
+{% extends "base.html" %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Analyze suspicious SMS messages and learn about possible scam warning signs.">
-    <title>ScamShield India | Digital Safety</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-    <header>
-        <div class="brand">ScamShield <span>India.</span></div>
-    </header>
+{% block title %}Message Analyzer | ScamShield {% endblock %}
+{% block page_heading %}Message Analyzer{% endblock %}
 
-    <section class="hero">
-        <span class="tag">YOUR DIGITAL SAFETY COMPANION</span>
-        <h1>Think before you<br>click.</h1>
-        <p>
-            Spot suspicious messages before they become a problem.
-            Check SMS, emails, and potential scams in one place.
-        </p>
-    </section>
+{% block content %}
 
-    <main class="panel">
-        <h2>Analyze a message</h2>
-        <p class="description">
-            Paste a suspicious message below to check for spam patterns
-            and potential warning signs.
-        </p>
+<section class="page-intro">
+    <p class="page-description">
+        Check a suspicious SMS or message for potential scam signals.
+    </p>
+</section>
 
-        <form method="POST" action="/">
-            <label for="message">Your message</label>
+<section class="content-card">
+    <div class="section-heading">
+        <h2>Message</h2>
+        <span class="metric-label" id="char-count">
+            {{ message|default('')|length }} / 10000
+        </span>
+    </div>
+
+    <form id="analyze-form" method="POST" action="{{ url_for('analyzer') }}">
+        <div class="form-field">
+            <label for="message">Paste your message</label>
+
             <textarea
                 id="message"
                 name="message"
-                rows="6"
                 maxlength="10000"
+                placeholder="Paste the suspicious message here..."
                 required
-                placeholder="Example: Your bank account will be blocked today. Click this link immediately to complete your KYC..."
-            >{{ message }}</textarea>
+            >{{ message|default('') }}</textarea>
 
-            <p id="char-count" class="small-note">0 / 10000 characters</p>
-
-            <div class="form-actions">
-                <button type="submit">Analyze Message →</button>
-                <button type="button" id="clear-message" class="clear-button">
-                    Clear Message
-                </button>
-            </div>
-        </form>
-
-        {% if result %}
-        <section class="result" aria-live="polite">
-            <h2>Analysis Results</h2>
-
-            <p class="result-status">{{ result.status }}</p>
-            <p>{{ result.explanation }}</p>
-
-            <div class="score">
-                <span>Model spam score</span>
-                <strong>{{ result.score }}%</strong>
-            </div>
-
-            <p class="small-note">
-                This score comes from the model's output. It is not a
-                calibrated probability that the message is fraudulent.
+            <p class="metric-label" style="margin-top: 8px;">
+                Don't include real passwords, OTPs, or private information.
             </p>
+        </div>
 
-            <h3>Warning signs</h3>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="primary-button" type="submit">
+                Analyze message
+            </button>
 
-            {% if result.warnings %}
-                <ul>
-                    {% for warning in result.warnings %}
-                        <li>{{ warning }}</li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <p>
-                    No listed warning patterns were detected. That does not
-                    guarantee the message is safe.
-                </p>
-            {% endif %}
+            <button
+                class="primary-button"
+                type="button"
+                id="clear-message"
+                style="background:#edf2eb; color:#31553a;"
+            >
+                Clear
+            </button>
+        </div>
+    </form>
+</section>
 
-            <p class="safety-tip">
-                <strong>Stay safe:</strong> Never share OTPs, UPI PINs,
-                passwords, or CVV details. Verify requests through the
-                organisation's official app or website.
-            </p>
-        </section>
+{% if result %}
+<section class="result-panel" id="analysis-result" tabindex="-1">
+    <div class="section-heading">
+        <h2>Result</h2>
+
+        {% if result.status == "Suspicious" %}
+            <span class="status-pill status-suspicious">
+                Suspicious
+            </span>
+        {% elif result.status == "Likely legitimate" %}
+            <span class="status-pill status-legitimate">
+                Likely legitimate
+            </span>
+        {% else %}
+            <span class="status-pill">{{ result.status }}</span>
         {% endif %}
-    </main>
+    </div>
 
-    <footer>
-        ScamShield India · Helping you stay alert online
-    </footer>
+    <p class="metric-label">Model spam score</p>
+    <div class="result-score">{{ result.score }}%</div>
 
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
-</body>
-</html>
+    <p class="page-description">{{ result.explanation }}</p>
+
+    <div class="section-heading" style="margin-top:24px;">
+        <h2>Warning signals</h2>
+    </div>
+
+    {% if result.warnings %}
+        <ul class="warning-list">
+            {% for warning in result.warnings %}
+                <li>{{ warning }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="page-description">
+            No warning signals were detected. This does not guarantee
+            that the message is safe.
+        </p>
+    {% endif %}
+
+    {% if result.scan_id %}
+        <p class="metric-note" style="margin-top:20px;">
+            Saved to local history as scan #{{ result.scan_id }}.
+            <a
+                class="secondary-link"
+                href="{{ url_for('scan_detail', scan_id=result.scan_id) }}"
+            >View report →</a>
+        </p>
+    {% endif %}
+
+    <p class="metric-note" style="margin-top:16px;">
+        The score is a model-generated spam score, not a verified
+        probability of fraud. Always verify suspicious claims independently.
+    </p>
+</section>
+{% endif %}
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+{% if result %}
+<script>
+    window.addEventListener("load", function () {
+        const result = document.getElementById("analysis-result");
+
+        if (result) {
+            result.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+        }
+    });
+</script>
+{% endif %}
+{% endblock %}

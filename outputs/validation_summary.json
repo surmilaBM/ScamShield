@@ -1,0 +1,98 @@
+{
+    "dataset_size": 5158,
+    "training_size": 4126,
+    "holdout_size": 1032,
+    "cross_validation_folds": 5,
+    "cross_validation": [
+        {
+            "model": "Logistic Regression",
+            "cv_training_seconds": 6.866,
+            "accuracy_mean": 0.9804,
+            "accuracy_std": 0.0026,
+            "spam_precision_mean": 0.9144,
+            "spam_precision_std": 0.0167,
+            "spam_recall_mean": 0.9299,
+            "spam_recall_std": 0.0225,
+            "spam_f1_mean": 0.9218,
+            "spam_f1_std": 0.0106
+        },
+        {
+            "model": "Linear SVM",
+            "cv_training_seconds": 1.217,
+            "accuracy_mean": 0.9852,
+            "accuracy_std": 0.0028,
+            "spam_precision_mean": 0.9597,
+            "spam_precision_std": 0.0102,
+            "spam_recall_mean": 0.9202,
+            "spam_recall_std": 0.0297,
+            "spam_f1_mean": 0.9392,
+            "spam_f1_std": 0.0126
+        }
+    ],
+    "holdout_test": [
+        {
+            "model": "Logistic Regression",
+            "accuracy": 0.9855,
+            "spam_precision": 0.9449,
+            "spam_recall": 0.9375,
+            "spam_f1": 0.9412,
+            "fit_seconds": 0.681
+        },
+        {
+            "model": "Linear SVM",
+            "accuracy": 0.9884,
+            "spam_precision": 0.9603,
+            "spam_recall": 0.9453,
+            "spam_f1": 0.9528,
+            "fit_seconds": 0.302
+        }
+    ],
+    "svm_threshold_experiment": [
+        {
+            "threshold": -0.5,
+            "accuracy": 0.9622,
+            "spam_precision": 0.7799,
+            "spam_recall": 0.9688,
+            "spam_f1": 0.8641,
+            "false_positives": 35,
+            "missed_spam": 4
+        },
+        {
+            "threshold": -0.25,
+            "accuracy": 0.9835,
+            "spam_precision": 0.9111,
+            "spam_recall": 0.9609,
+            "spam_f1": 0.9354,
+            "false_positives": 12,
+            "missed_spam": 5
+        },
+        {
+            "threshold": 0.0,
+            "accuracy": 0.9884,
+            "spam_precision": 0.9603,
+            "spam_recall": 0.9453,
+            "spam_f1": 0.9528,
+            "false_positives": 5,
+            "missed_spam": 7
+        },
+        {
+            "threshold": 0.25,
+            "accuracy": 0.9855,
+            "spam_precision": 0.9748,
+            "spam_recall": 0.9062,
+            "spam_f1": 0.9393,
+            "false_positives": 3,
+            "missed_spam": 12
+        },
+        {
+            "threshold": 0.5,
+            "accuracy": 0.9787,
+            "spam_precision": 1.0,
+            "spam_recall": 0.8281,
+            "spam_f1": 0.906,
+            "false_positives": 0,
+            "missed_spam": 22
+        }
+    ],
+    "note": "Results measure performance on this SMS spam dataset, not all real-world Indian scams."
+}

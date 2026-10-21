@@ -1,0 +1,234 @@
+{% extends "base.html" %}
+
+{% block title %}Scan History | ScamShield India{% endblock %}
+{% block page_heading %}Scan History{% endblock %}
+
+{% block content %}
+
+<section class="page-intro" style="margin-bottom: 22px;">
+    <p class="page-description" style="margin-top: 0;">
+        Browse and filter your previous scans.
+    </p>
+</section>
+
+<section class="content-card">
+
+    <!-- History heading -->
+    <div class="section-heading history-heading">
+        <div>
+            <h2>All scans</h2>
+            <span class="metric-label">
+                {{ scans|length + url_scans|length }} records
+            </span>
+        </div>
+
+        {% if scans or url_scans %}
+        <form
+            method="POST"
+            action="{{ url_for('clear_history') }}"
+            onsubmit="return confirm('Are you sure you want to permanently clear your scan history?');"
+        >
+            <button type="submit" class="danger-button">
+                Clear history
+            </button>
+        </form>
+        {% endif %}
+    </div>
+
+    <!-- Search and filters -->
+    <div class="history-controls">
+        <input
+            type="search"
+            id="history-search"
+            class="history-search"
+            placeholder="Search messages, URLs, or IDs..."
+            aria-label="Search scan history"
+        >
+
+        <select id="history-type" class="history-filter"
+                aria-label="Filter by scan type">
+            <option value="all">All types</option>
+            <option value="message">Messages</option>
+            <option value="url">URLs</option>
+        </select>
+
+        <select id="history-result" class="history-filter"
+                aria-label="Filter by result">
+            <option value="all">All results</option>
+            <option value="suspicious">Suspicious / flagged</option>
+            <option value="legitimate">Lower risk / likely legitimate</option>
+        </select>
+    </div>
+
+    {% if scans or url_scans %}
+
+    <div class="data-table-wrap">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Type</th>
+                    <th>Message / URL</th>
+                    <th>Result</th>
+                    <th>Score</th>
+                    <th>Signals</th>
+                    <th>Details</th>
+                </tr>
+            </thead>
+
+            <tbody id="history-table-body">
+
+                {% for scan in scans %}
+                <tr
+                    data-type="message"
+                    data-result="{% if scan.status == 'Suspicious' %}suspicious{% else %}legitimate{% endif %}"
+                    data-search="{{ ('#' ~ scan.id ~ ' ' ~ scan.message ~ ' ' ~ scan.status)|lower }}"
+                >
+                    <td>#{{ scan.id }}</td>
+                    <td>Message</td>
+                    <td>
+                        {{ scan.message[:60] }}{% if scan.message|length > 60 %}…{% endif %}
+                    </td>
+
+                    <td>
+                        {% if scan.status == "Suspicious" %}
+                            <span class="status-pill status-suspicious">
+                                Suspicious
+                            </span>
+                        {% elif scan.status == "Needs caution" %}
+                            <span class="status-pill status-caution">
+                                Needs caution
+                            </span>
+                        {% else %}
+                            <span class="status-pill status-legitimate">
+                                {{ scan.status }}
+                            </span>
+                        {% endif %}
+                    </td>
+
+                    <td>{{ scan.score }}%</td>
+                    <td>{{ scan.warnings|length }}</td>
+                    <td>
+                        <a href="{{ url_for('scan_detail', scan_id=scan.id) }}">
+                            View
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+
+                {% for scan in url_scans %}
+                <tr
+                    data-type="url"
+                    data-result="{% if scan.score >= 30 %}suspicious{% else %}legitimate{% endif %}"
+                    data-search="{{ ('#' ~ scan.id ~ ' ' ~ scan.url ~ ' ' ~ scan.status)|lower }}"
+                >
+                    <td>#{{ scan.id }}</td>
+                    <td>URL</td>
+                    <td>
+                        {{ scan.url[:60] }}{% if scan.url|length > 60 %}…{% endif %}
+                    </td>
+
+                    <td>
+                        {% if scan.score >= 60 %}
+                            <span class="status-pill status-suspicious">
+                                High structural risk
+                            </span>
+                        {% elif scan.score >= 30 %}
+                            <span class="status-pill status-suspicious">
+                                Warning signals
+                            </span>
+                        {% else %}
+                            <span class="status-pill status-legitimate">
+                                Lower structural risk
+                            </span>
+                        {% endif %}
+                    </td>
+
+                    <td>{{ scan.score }}/100</td>
+                    <td>{{ scan.warnings|length }}</td>
+                    <td>
+                        <a href="{{ url_for('url_scanner') }}">
+                            Open scanner →
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+
+    <div id="history-no-results" class="empty-state" hidden>
+        <p><strong>No matching scans</strong></p>
+        <p>Try changing your search or filters.</p>
+    </div>
+
+    {% else %}
+
+    <div class="empty-state">
+        <p><strong>No scans yet</strong></p>
+        <p>Your analyzed messages will appear here.</p>
+
+        <a class="primary-link" href="{{ url_for('analyzer') }}">
+            Analyze a message →
+        </a>
+
+        {% if SHOW_URL_SCANNER %}
+        <a class="primary-link" href="{{ url_for('url_scanner') }}">
+            Scan a URL →
+        </a>
+        {% endif %}
+    </div>
+
+    {% endif %}
+
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const search = document.getElementById("history-search");
+    const typeFilter = document.getElementById("history-type");
+    const resultFilter = document.getElementById("history-result");
+    const rows = Array.from(
+        document.querySelectorAll("#history-table-body tr")
+    );
+    const empty = document.getElementById("history-no-results");
+
+    if (!search || !typeFilter || !resultFilter) return;
+
+    function applyFilters() {
+        const query = search.value.trim().toLowerCase();
+        let visible = 0;
+
+        rows.forEach(function (row) {
+            const matchesSearch = row.dataset.search.includes(query);
+
+            const matchesType =
+                typeFilter.value === "all" ||
+                row.dataset.type === typeFilter.value;
+
+            const matchesResult =
+                resultFilter.value === "all" ||
+                row.dataset.result === resultFilter.value;
+
+            const show = matchesSearch && matchesType && matchesResult;
+
+            row.hidden = !show;
+
+            if (show) visible++;
+        });
+
+        if (empty) {
+            empty.hidden = visible !== 0;
+        }
+    }
+
+    search.addEventListener("input", applyFilters);
+    typeFilter.addEventListener("change", applyFilters);
+    resultFilter.addEventListener("change", applyFilters);
+});
+</script>
+{% endblock %}

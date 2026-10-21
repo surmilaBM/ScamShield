@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Page Not Found | ScamShield {% endblock %}
+{% block page_heading %}Page Not Found{% endblock %}
+
+{% block content %}
+
+<section
+    class="content-card"
+    style="max-width: 650px; margin: 40px auto; padding: 44px 25px; text-align: center;"
+>
+    <div
+        class="action-icon"
+        style="margin: 0 auto 22px; width: 58px; height: 58px; font-size: 25px;"
+        aria-hidden="true"
+    >
+        ?
+    </div>
+
+    <p class="metric-label" style="margin-bottom: 12px;">
+        ERROR 404
+    </p>
+
+    <h2 style="margin-bottom: 12px;">
+        This page doesn't exist.
+    </h2>
+
+    <p class="page-description" style="margin: 0 auto 24px;">
+        The address may be incorrect or the page may have moved.
+        Let's get you back to your security workspace.
+    </p>
+
+    <a class="primary-link" href="{{ url_for('dashboard') }}">
+        ← Back to Overview
+    </a>
+</section>
+
+{% endblock %}

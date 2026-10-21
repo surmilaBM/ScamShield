@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Scan #{{ scan.id }} | ScamShield India{% endblock %}
+{% block page_heading %}Scan Details{% endblock %}
+
+{% block content %}
+
+<!-- Scan result -->
+<section class="content-card">
+    <div class="section-heading">
+        <div>
+            <h2>Scan #{{ scan.id }}</h2>
+            <span class="metric-label">Message analysis report</span>
+        </div>
+
+        {% if scan.status == "Suspicious" %}
+            <span class="status-pill status-suspicious">Suspicious</span>
+        {% elif scan.status == "Needs caution" %}
+            <span class="status-pill status-caution">Needs caution</span>
+        {% else %}
+            <span class="status-pill status-legitimate">
+                {{ scan.status }}
+            </span>
+        {% endif %}
+    </div>
+
+    <div style="margin-top: 22px;">
+        <p class="metric-label">Model spam score</p>
+        <div class="result-score">{{ scan.score }}%</div>
+        <p class="metric-note">
+            This is a model-generated spam score, not a verified probability
+            of fraud. A low score does not guarantee safety.
+        </p>
+    </div>
+</section>
+
+<!-- Original message -->
+<section class="content-card" style="margin-top: 20px;">
+    <div class="section-heading">
+        <h2>Original message</h2>
+    </div>
+
+    <div class="form-field">
+        <textarea readonly aria-label="Original scanned message">{{ scan.message }}</textarea>
+    </div>
+</section>
+
+<!-- Warning signals -->
+<section class="content-card" style="margin-top: 20px;">
+    <div class="section-heading">
+        <h2>Warning signals</h2>
+        <span class="metric-label">
+            {{ scan.warnings|length }} detected
+        </span>
+    </div>
+
+    {% if scan.warnings %}
+        <ul class="warning-list">
+            {% for warning in scan.warnings %}
+                <li>{{ warning }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="page-description">
+            No warning signals were detected by the current checks.
+            This does not guarantee that the message is safe.
+        </p>
+    {% endif %}
+</section>
+
+<!-- Actions -->
+<div class="scan-detail-actions" style="margin-top: 22px;">
+    <a class="primary-link" href="{{ url_for('history') }}">
+        Back to history
+    </a>
+
+    <a class="secondary-link" href="{{ url_for('analyzer') }}">
+        Analyze another message
+    </a>
+</div>
+
+{% endblock %}

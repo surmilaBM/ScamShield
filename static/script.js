@@ -2,25 +2,24 @@
 const messageBox = document.getElementById("message");
 const charCount = document.getElementById("char-count");
 const clearButton = document.getElementById("clear-message");
-const form = document.querySelector("form");
+const form = document.getElementById("analyze-form");
 const analyzeButton = form?.querySelector('button[type="submit"]');
 
 function updateCounter() {
-    if (messageBox && charCount) {
-        charCount.textContent =
-            `${messageBox.value.length} / 10000 characters`;
-    }
+    if (!messageBox || !charCount) return;
+
+    charCount.textContent = `${messageBox.value.length} / 10000`;
 }
 
 messageBox?.addEventListener("input", updateCounter);
 updateCounter();
 
 clearButton?.addEventListener("click", () => {
-    if (messageBox) {
-        messageBox.value = "";
-        updateCounter();
-        messageBox.focus();
-    }
+    if (!messageBox) return;
+
+    messageBox.value = "";
+    updateCounter();
+    messageBox.focus();
 });
 
 form?.addEventListener("submit", (event) => {
@@ -31,7 +30,11 @@ form?.addEventListener("submit", (event) => {
     }
 
     if (analyzeButton) {
-        analyzeButton.textContent = "Analyzing...";
         analyzeButton.disabled = true;
+        const buttonText = analyzeButton.querySelector("span");
+
+        if (buttonText) {
+            buttonText.textContent = "Analyzing message...";
+        }
     }
 });
